@@ -1,11 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
-
-INCLUDE(CPack)
-INCLUDE(FindPkgConfig)
 project(fx-rack)
 
 OPTION (BUILD_SHARED_LIBS "Build shared libraries." ON)
 include_directories(${CMAKE_SOURCE_DIR}/avlib/include)
+include_directories(${CMAKE_JS_INC})
 
 add_definitions("-D_SCL_SECURE_NO_WARNINGS")
 find_package(SDL)
@@ -16,6 +14,6 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 add_subdirectory(avlib/src)
 add_subdirectory(avlib/include)
 
-SET(EX_LIBS iimav)
-add_executable(fx-rack main.cpp)
-target_link_libraries (fx-rack  ${EX_LIBS})
+add_library(${PROJECT_NAME} SHARED main.cpp ${CMAKE_JS_SRC})
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
+target_link_libraries (fx-rack iimav ${CMAKE_JS_LIB})
