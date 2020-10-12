@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 
 INCLUDE(CPack)
 INCLUDE(FindPkgConfig)
-project (iimav)
+project(fx-rack)
 
 OPTION (BUILD_SHARED_LIBS "Build shared libraries." ON)
 include_directories(${CMAKE_SOURCE_DIR}/avlib/include)
@@ -19,4 +19,3 @@ add_subdirectory(avlib/include)
 SET(EX_LIBS iimav)
 add_executable(fx-rack main.cpp)
 target_link_libraries (fx-rack  ${EX_LIBS})
-install(TARGETS fx-rack RUNTIME DESTINATION bin)
