@@ -1,3 +1,4 @@
+#pragma once
 #include "iimavlib.h"
 
 namespace sine_gen {
@@ -14,6 +15,6 @@ namespace sine_gen {
       const double freq;
       double time = 0;
       bool& active;
-      error_type_t do_process(audio_buffer_t& buffer);
+      error_type_t do_process(audio_buffer_t& buffer) override;
   };
 }
