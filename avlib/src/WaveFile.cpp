@@ -95,10 +95,15 @@ error_type_t WaveFile::read_data(std::vector<audio_sample_t>& data, size_t& samp
 		}
 	} else {
 		mono_buffer_.resize(sample_count);
+		size_t data_size = mono_data.size();
 		for (size_t i = 0; i < sample_count; i++) {
-			mono_buffer_[i] = cursor + i;
+			size_t idx = cursor + i;
+			if (idx < data_size) {
+				data[i].left = mono_data[cursor + i];
+			} else {
+				data[i].left = 0;
+			}
 		}
-		std::copy(mono_buffer_.begin(), mono_buffer_.begin() + sample_count, data.begin());
 	}
 
 	cursor += sample_count;

@@ -63,8 +63,7 @@ public:
 		mode = mode_;
 	}
 	LogProxy operator[](log_level level_) {
-		if (!active(level_)) return LogProxy(nullptr);
-		else return LogProxy(&stream);
+		return LogProxy(nullptr);
 	}
 	inline bool active(log_level level) {
 		return level<=mode;

@@ -1,7 +1,7 @@
 #include <node.h>
 #include <uv.h>
-#include <iostream>
 #include <atomic>
+#include <iostream>
 #include "iimavlib.h"
 #include "iimavlib/WaveSource.h"
 
@@ -21,7 +21,7 @@ namespace fx_rack {
 
   struct Work {
     uv_work_t request;
-    char* filename;
+    std::string filename;
   };
 
   std::atomic<bool> active(false);
@@ -34,7 +34,10 @@ namespace fx_rack {
       .sink();
 
     chain->run();
-    delete work;
+  }
+
+  void play_worker_cb(uv_work_t *req,int status) {
+    delete req->data;
   }
 
   void play(const FunctionCallbackInfo<Value>& args) {
@@ -46,8 +49,8 @@ namespace fx_rack {
 
     Work* work = new Work();
     work->request.data = work;
-    work->filename = *filename;
-    uv_queue_work(uv_default_loop(), &work->request, &play_worker, nullptr);
+    work->filename = std::string(*filename);
+    uv_queue_work(uv_default_loop(), &work->request, &play_worker, &play_worker_cb);
   }
 
   void stop(const FunctionCallbackInfo<Value>& args) {
