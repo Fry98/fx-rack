@@ -14,17 +14,19 @@
 #include "WaveFile.h"
 #include "AudioFilter.h"
 #include <string>
+#include <atomic>
 
 namespace iimavlib {
 class EXPORT WaveSource: public AudioFilter {
 public:
-	WaveSource(const std::string filename);
+	WaveSource(const std::string filename, std::atomic<bool>& active);
 	virtual ~WaveSource();
 
 private:
 	virtual error_type_t do_process(audio_buffer_t& buffer);
 	virtual audio_params_t do_get_params() const;
 	WaveFile file_;
+	std::atomic<bool>& active;
 };
 
 }

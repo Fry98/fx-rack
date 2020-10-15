@@ -12,10 +12,10 @@
 #include "iimavlib/Utils.h"
 namespace iimavlib {
 
-WaveSource::WaveSource(const std::string filename):AudioFilter(pAudioFilter()),file_(filename)
-{
-
-}
+WaveSource::WaveSource(
+	const std::string filename,
+	std::atomic<bool>& active
+): AudioFilter(pAudioFilter()), file_(filename), active(active) {}
 
 WaveSource::~WaveSource()
 {
@@ -24,6 +24,7 @@ WaveSource::~WaveSource()
 error_type_t WaveSource::do_process(audio_buffer_t& buffer)
 {
 //	logger[log_level::debug] << "[WaveSource] Processing buffer";
+	if (!active) return error_type_t::failed;
 	error_type_t ret = file_.read_data(buffer.data,buffer.valid_samples);
 	if (buffer.valid_samples==0) return error_type_t::failed;
 	return ret;
