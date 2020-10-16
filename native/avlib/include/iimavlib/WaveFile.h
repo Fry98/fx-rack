@@ -109,9 +109,6 @@ private:
 	std::fstream file_;
 	bool mono_source_;
 	std::vector<int16_t> mono_buffer_;
-	std::vector<int16_t> mono_data;
-	std::vector<audio_sample_t> stereo_data;
-	size_t cursor = 0;
 
 	void update(size_t new_data_size = 0);
 

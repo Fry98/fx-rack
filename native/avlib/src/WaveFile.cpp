@@ -41,18 +41,6 @@ WaveFile::WaveFile(const std::string& filename):mono_source_(false)
 			throw std::runtime_error("Only mono or stereo samples are supported");
 		}
 	}
-
-	if (mono_source_) {
-		int16_t sample;
-		while (file_.read(reinterpret_cast<char*>(&sample), sizeof(int16_t))) {
-			mono_data.push_back(sample);
-		}
-	} else {
-		audio_sample_t sample;
-		while (file_.read(reinterpret_cast<char*>(&sample), sizeof(audio_sample_t))) {
-			stereo_data.push_back(sample);
-		}
-	}
 }
 
 void WaveFile::update(size_t new_data_size)
@@ -84,29 +72,15 @@ error_type_t WaveFile::read_data(std::vector<audio_sample_t>& data, size_t& samp
 	size_t max_samples = data.size();
 	if (sample_count > max_samples) sample_count = max_samples;
 	if (!mono_source_) {
-		size_t data_size = stereo_data.size();
-		for (size_t i = 0; i < sample_count; i++) {
-			size_t idx = cursor + i;
-			if (idx < data_size) {
-				data[i] = stereo_data[idx];
-			} else {
-				data[i] = 0;
-			}
-		}
+		file_.read(reinterpret_cast<char*>(&data[0]),sample_count*params_.sample_size());
+		sample_count = file_.gcount() / params_.sample_size();
 	} else {
 		mono_buffer_.resize(sample_count);
-		size_t data_size = mono_data.size();
-		for (size_t i = 0; i < sample_count; i++) {
-			size_t idx = cursor + i;
-			if (idx < data_size) {
-				data[i].left = mono_data[cursor + i];
-			} else {
-				data[i].left = 0;
-			}
-		}
+		file_.read(reinterpret_cast<char*>(&mono_buffer_[0]),sample_count*sizeof(int16_t));
+		sample_count = file_.gcount() / sizeof(int16_t);
+		std::copy(mono_buffer_.begin(), mono_buffer_.begin() + sample_count, data.begin());
 	}
 
-	cursor += sample_count;
 	return error_type_t::ok;
 }
 }

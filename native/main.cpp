@@ -34,6 +34,7 @@ namespace fx_rack {
       .sink();
 
     chain->run();
+    active = false;
   }
 
   void play_worker_cb(uv_work_t *req,int status) {
