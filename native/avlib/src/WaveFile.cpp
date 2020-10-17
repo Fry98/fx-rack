@@ -23,7 +23,7 @@ WaveFile::WaveFile(const std::string& filename, audio_params_t params)
 	update(0);
 }
 
-WaveFile::WaveFile(const std::string& filename):mono_source_(false)
+WaveFile::WaveFile(const std::string& filename, Duration& duration):mono_source_(false)
 {
 	file_.open(filename,std::ios::binary | std::ios::in);
 	if (!file_.is_open()) throw std::runtime_error("Failed to open the input file");
@@ -40,6 +40,21 @@ WaveFile::WaveFile(const std::string& filename):mono_source_(false)
 		} else {
 			throw std::runtime_error("Only mono or stereo samples are supported");
 		}
+	}
+
+	duration.rate = header_.rate;
+	if (mono_source_) {
+		int16_t sample;
+		while (file_.read(reinterpret_cast<char*>(&sample), sizeof(int16_t))) {
+			mono_data.push_back(sample);
+		}
+		duration.length = mono_data.size();
+	} else {
+		audio_sample_t sample;
+		while (file_.read(reinterpret_cast<char*>(&sample), sizeof(audio_sample_t))) {
+			stereo_data.push_back(sample);
+		}
+		duration.length = stereo_data.size();
 	}
 }
 
@@ -70,17 +85,34 @@ error_type_t WaveFile::store_data(const std::vector<audio_sample_t>& data, size_
 error_type_t WaveFile::read_data(std::vector<audio_sample_t>& data, size_t& sample_count)
 {
 	size_t max_samples = data.size();
+	size_t invalid = 0;
 	if (sample_count > max_samples) sample_count = max_samples;
 	if (!mono_source_) {
-		file_.read(reinterpret_cast<char*>(&data[0]),sample_count*params_.sample_size());
-		sample_count = file_.gcount() / params_.sample_size();
+		size_t data_size = stereo_data.size();
+		for (size_t i = 0; i < sample_count; i++) {
+			size_t idx = cursor + i;
+			if (idx < data_size) {
+				data[i] = stereo_data[idx];
+			} else {
+				data[i] = 0;
+				invalid++;
+			}
+		}
 	} else {
-		mono_buffer_.resize(sample_count);
-		file_.read(reinterpret_cast<char*>(&mono_buffer_[0]),sample_count*sizeof(int16_t));
-		sample_count = file_.gcount() / sizeof(int16_t);
-		std::copy(mono_buffer_.begin(), mono_buffer_.begin() + sample_count, data.begin());
+		size_t data_size = mono_data.size();
+		for (size_t i = 0; i < sample_count; i++) {
+			size_t idx = cursor + i;
+			if (idx < data_size) {
+				data[i].left = mono_data[cursor + i];
+			} else {
+				data[i].left = 0;
+				invalid++;
+			}
+		}
 	}
 
+	sample_count = sample_count - invalid;
+	cursor += sample_count;
 	return error_type_t::ok;
 }
 }

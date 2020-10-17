@@ -12,6 +12,7 @@
 
 #include "AudioTypes.h"
 #include "PlatformDefs.h"
+#include "../../../duaration.h"
 #include <fstream>
 #include <string>
 #include <vector>
@@ -77,7 +78,7 @@ public:
 	 * Throws std::runtime_exception when the file doesn't exist or the header is corrupted
 	 * @param filename Name of the file to read
 	 */
-	WaveFile(const std::string& filename);
+	WaveFile(const std::string& filename, Duration& duration);
 
 
 	/**
@@ -109,6 +110,9 @@ private:
 	std::fstream file_;
 	bool mono_source_;
 	std::vector<int16_t> mono_buffer_;
+	std::vector<int16_t> mono_data;
+	std::vector<audio_sample_t> stereo_data;
+	size_t cursor = 0;
 
 	void update(size_t new_data_size = 0);
 

@@ -4,21 +4,21 @@ SET (IIMA_INCLUDE )
 
 SET (IIMA_SRC Utils.cpp AudioTypes.cpp AudioFilter.cpp AudioSink.cpp
 				WaveFile.cpp WaveSource.cpp WaveSink.cpp
-				filters/SineMultiply.cpp filters/NullFilter.cpp 
+				filters/SineMultiply.cpp filters/NullFilter.cpp
 				filters/SimpleEchoFilter.cpp
 				video_ops.cpp
-				
-				
+
+
 				artnet/Socket.cpp
 				artnet/DatagramSocket.cpp
 				artnet/ARTNet.cpp
-				
-				
-				
-				../include/iimavlib.h ../include/iimavlib/Utils.h ../include/iimavlib/AudioTypes.h 
+
+
+
+				../include/iimavlib.h ../include/iimavlib/Utils.h ../include/iimavlib/AudioTypes.h
 				../include/iimavlib/AudioFilter.h ../include/iimavlib/AudioSink.h
 				../include/iimavlib/WaveFile.h ../include/iimavlib/WaveSource.h ../include/iimavlib/WaveSink.h
-				../include/iimavlib/filters/SineMultiply.h ../include/iimavlib/filters/NullFilter.h 
+				../include/iimavlib/filters/SineMultiply.h ../include/iimavlib/filters/NullFilter.h
 				../include/iimavlib/filters/SimpleEchoFilter.h
 				../include/iimavlib/video_types.h ../include/iimavlib/video_ops.h
 				../include/iimavlib/artnet/ARTNet.h
@@ -55,5 +55,5 @@ target_link_libraries ( iimav ${IIMA_LIBS})
 
 SET_TARGET_PROPERTIES( iimav PROPERTIES SOVERSION 1 VERSION 1.1.0 )
 install(TARGETS iimav 		RUNTIME DESTINATION bin
-							LIBRARY DESTINATION lib 
+							LIBRARY DESTINATION lib
 							ARCHIVE DESTINATION lib)

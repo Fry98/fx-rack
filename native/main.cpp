@@ -1,15 +1,14 @@
 #include <node.h>
-#include <uv.h>
-#include <atomic>
 #include <iostream>
 #include "iimavlib.h"
-#include "iimavlib/WaveSource.h"
+#include "duaration.h"
+#include "iimavlib/WaveFile.h"
+// #include <uv.h>
+// #include <atomic>
+
+#define print(x) std::cout << x << std::endl;
 
 namespace fx_rack {
-  using iimavlib::PlatformDevice;
-  using iimavlib::PlatformSink;
-  using iimavlib::filter_chain;
-  using iimavlib::WaveSource;
   using v8::Exception;
   using v8::FunctionCallbackInfo;
   using v8::Isolate;
@@ -18,49 +17,43 @@ namespace fx_rack {
   using v8::Object;
   using v8::String;
   using v8::Value;
+  using v8::Context;
+  using iimavlib::WaveFile;
 
-  struct Work {
-    uv_work_t request;
-    std::string filename;
-  };
-
-  std::atomic<bool> active(false);
-
-  void play_worker(uv_work_t* req) {
-    Work* work = static_cast<Work*>(req->data);
-    auto device_id = PlatformDevice::default_device();
-    auto chain = filter_chain<WaveSource>(work->filename, active)
-      .add<PlatformSink>(device_id)
-      .sink();
-
-    chain->run();
-    active = false;
-  }
-
-  void play_worker_cb(uv_work_t *req,int status) {
-    delete req->data;
-  }
-
-  void play(const FunctionCallbackInfo<Value>& args) {
-    if (active) return;
-    active = true;
-
+  void load(const FunctionCallbackInfo<Value>& args) {
+    print("load");
     Isolate* isolate = args.GetIsolate();
+    if (args.Length() != 1 || !args[0]->IsString()) {
+      isolate->ThrowException(Exception::TypeError(
+        String::NewFromUtf8(isolate, "Invalid arguments").ToLocalChecked()
+      ));
+      return;
+    }
+
     String::Utf8Value filename(isolate, args[0]);
+    Duration duration;
+    WaveFile file(*filename, duration);
+    Local<Context> context = isolate->GetCurrentContext();
+    Local<Object> obj = Object::New(isolate);
 
-    Work* work = new Work();
-    work->request.data = work;
-    work->filename = std::string(*filename);
-    uv_queue_work(uv_default_loop(), &work->request, &play_worker, &play_worker_cb);
-  }
+    obj->Set(
+      context,
+      String::NewFromUtf8(isolate, "rate").ToLocalChecked(),
+      Number::New(isolate, duration.rate)
+    );
 
-  void stop(const FunctionCallbackInfo<Value>& args) {
-    active = false;
+    obj->Set(
+      context,
+      String::NewFromUtf8(isolate, "length").ToLocalChecked(),
+      Number::New(isolate, duration.length)
+    );
+
+    args.GetReturnValue().Set(obj);
   }
 
   void initialize(Local<Object> exports) {
-    NODE_SET_METHOD(exports, "play", play);
-    NODE_SET_METHOD(exports, "stop", stop);
+    print("init");
+    NODE_SET_METHOD(exports, "load", load);
   }
 
   NODE_MODULE(NODE_GYP_MODULE_NAME, initialize);

@@ -12,6 +12,7 @@ function createWindow () {
   });
 
   win.setMenu(null);
+  win.setResizable(false);
   win.loadFile('app/index.html');
 }
 
@@ -29,5 +30,8 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.on('play', () => fxRack.play(path.join(__dirname, './sample.wav')));
-ipcMain.on('stop', () => fxRack.stop());
+ipcMain.on('play', () => {
+  const x = fxRack.load(path.join(__dirname, './sample.wav'));
+  console.log(x);
+});
+// ipcMain.on('stop', () => fxRack.stop());

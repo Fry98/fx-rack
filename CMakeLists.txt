@@ -16,4 +16,4 @@ add_subdirectory(native/avlib/include)
 
 add_library(${PROJECT_NAME} SHARED native/main.cpp ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries (fx-rack iimav ${CMAKE_JS_LIB})
+target_link_libraries (${PROJECT_NAME} iimav ${CMAKE_JS_LIB})
