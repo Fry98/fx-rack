@@ -30,6 +30,10 @@ app.on('activate', () => {
   }
 });
 
+fxRack.onCursorMove(cursor => {
+  console.log(cursor);
+});
+
 ipcMain.on('play', () => {
   try {
     const x = fxRack.load(path.join(__dirname, './sample.wav'));
@@ -40,7 +44,5 @@ ipcMain.on('play', () => {
 });
 
 ipcMain.on('stop', () => {
-  fxRack.runCb(res => {
-    console.log(res);
-  });
+  fxRack.getCursor();
 });

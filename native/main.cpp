@@ -19,9 +19,11 @@ namespace fx_rack {
   using v8::Value;
   using v8::Function;
   using v8::Context;
+  using v8::Persistent;
   using iimavlib::WaveFile;
 
   WaveFile* current_file = nullptr;
+  Persistent<Function> cursor_cb;
 
   void load(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = args.GetIsolate();
@@ -58,21 +60,29 @@ namespace fx_rack {
     args.GetReturnValue().Set(obj);
   }
 
-  void run_cb(const FunctionCallbackInfo<Value>& args) {
+  void on_cursor_move(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = args.GetIsolate();
-    Local<Context> context = isolate->GetCurrentContext();
     Local<Function> cb = Local<Function>::Cast(args[0]);
+    cursor_cb.Reset(isolate, cb);
+  }
 
-    const unsigned argc = 1;
-    Local<Value> argv[argc] = {
-      String::NewFromUtf8(isolate, "hello world").ToLocalChecked()
+  void get_cursor(const FunctionCallbackInfo<Value>& args) {
+    Isolate* isolate = args.GetIsolate();
+    Local<Value> argv[] = {
+      Number::New(isolate, 420)
     };
-    cb->Call(context, Null(isolate), argc, argv).ToLocalChecked();
+
+    Local<Function>::New(isolate, cursor_cb)->Call(
+      isolate->GetCurrentContext(),
+      Null(isolate), 1, argv
+    );
+    cursor_cb.Reset();
   }
 
   void initialize(Local<Object> exports) {
     NODE_SET_METHOD(exports, "load", load);
-    NODE_SET_METHOD(exports, "runCb", run_cb);
+    NODE_SET_METHOD(exports, "onCursorMove", on_cursor_move);
+    NODE_SET_METHOD(exports, "getCursor", get_cursor);
   }
 
   NODE_MODULE(NODE_GYP_MODULE_NAME, initialize);
