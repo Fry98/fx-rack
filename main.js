@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fxRack = require('./build/Debug/fx-rack');
 
@@ -31,7 +31,16 @@ app.on('activate', () => {
 });
 
 ipcMain.on('play', () => {
-  const x = fxRack.load(path.join(__dirname, './sample.wav'));
-  console.log(x);
+  try {
+    const x = fxRack.load(path.join(__dirname, './sample.wav'));
+    console.log(x);
+  } catch (err) {
+    dialog.showErrorBox('Load Error', err.message);
+  }
 });
-// ipcMain.on('stop', () => fxRack.stop());
+
+ipcMain.on('stop', () => {
+  fxRack.runCb(res => {
+    console.log(res);
+  });
+});
