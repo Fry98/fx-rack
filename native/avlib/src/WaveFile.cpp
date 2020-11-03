@@ -23,7 +23,7 @@ WaveFile::WaveFile(const std::string& filename, audio_params_t params)
 	update(0);
 }
 
-WaveFile::WaveFile(const std::string& filename, Duration& duration):mono_source_(false)
+WaveFile::WaveFile(const std::string& filename):mono_source_(false)
 {
 	file_.open(filename,std::ios::binary | std::ios::in);
 	if (!file_.is_open()) throw std::runtime_error("Failed to open the input file");
@@ -42,19 +42,16 @@ WaveFile::WaveFile(const std::string& filename, Duration& duration):mono_source_
 		}
 	}
 
-	duration.rate = header_.rate;
 	if (mono_source_) {
 		int16_t sample;
 		while (file_.read(reinterpret_cast<char*>(&sample), sizeof(int16_t))) {
 			mono_data.push_back(sample);
 		}
-		duration.length = mono_data.size();
 	} else {
 		audio_sample_t sample;
 		while (file_.read(reinterpret_cast<char*>(&sample), sizeof(audio_sample_t))) {
 			stereo_data.push_back(sample);
 		}
-		duration.length = stereo_data.size();
 	}
 }
 

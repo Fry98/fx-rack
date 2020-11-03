@@ -12,7 +12,6 @@
 
 #include "AudioTypes.h"
 #include "PlatformDefs.h"
-#include "../../../duaration.h"
 #include <fstream>
 #include <string>
 #include <vector>
@@ -78,7 +77,7 @@ public:
 	 * Throws std::runtime_exception when the file doesn't exist or the header is corrupted
 	 * @param filename Name of the file to read
 	 */
-	WaveFile(const std::string& filename, Duration& duration);
+	WaveFile(const std::string& filename);
 
 
 	/**

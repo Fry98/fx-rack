@@ -13,9 +13,11 @@
 namespace iimavlib {
 
 WaveSource::WaveSource(
-	const std::string filename,
+	WaveFile& file,
 	std::atomic<bool>& active
-): AudioFilter(pAudioFilter()), file_(filename, Duration()), active(active) {}
+): AudioFilter(pAudioFilter()), file_(file), active(active) {}
+
+
 
 WaveSource::~WaveSource()
 {

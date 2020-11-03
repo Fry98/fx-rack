@@ -7,15 +7,18 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: true
     }
   });
 
   win.setMenu(null);
   win.setResizable(false);
   win.loadFile('app/index.html');
+  win.webContents.openDevTools();
 }
 
+app.allowRendererProcessReuse = true;
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
@@ -30,19 +33,22 @@ app.on('activate', () => {
   }
 });
 
-fxRack.onCursorMove(cursor => {
-  console.log(cursor);
-});
-
-ipcMain.on('play', () => {
+ipcMain.on('load', () => {
   try {
     const x = fxRack.load(path.join(__dirname, './sample.wav'));
-    console.log(x);
   } catch (err) {
     dialog.showErrorBox('Load Error', err.message);
   }
 });
 
+ipcMain.on('play', () => {
+  try {
+    fxRack.play();
+  } catch (err) {
+    dialog.showErrorBox('Play Error', err.message);
+  }
+});
+
 ipcMain.on('stop', () => {
-  fxRack.getCursor();
+  fxRack.stop();
 });
