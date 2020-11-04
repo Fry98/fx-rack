@@ -14,6 +14,7 @@ function createWindow () {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    resizable: false,
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true
@@ -21,7 +22,6 @@ function createWindow () {
   });
 
   win.setMenu(null);
-  win.setResizable(false);
   win.loadFile('public/index.html');
   // win.webContents.openDevTools();
 }
