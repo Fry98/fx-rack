@@ -1,11 +1,14 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const fxRack = require('./build/Release/fx-rack');
 const path = require('path');
-require('electron-reload')(
-  path.join(__dirname, 'public'), {
-    electron: path.join(__dirname, 'node_modules', '.bin', 'electron.cmd')
-  }
-);
+
+if (process.env.NODE_ENV === 'development') {
+  require('electron-reload')(
+    path.join(__dirname, 'public'), {
+      electron: path.join(__dirname, 'node_modules', '.bin', 'electron.cmd')
+    }
+  );
+}
 
 function createWindow () {
   const win = new BrowserWindow({

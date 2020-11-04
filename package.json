@@ -1,25 +1,49 @@
 {
-  "name": "svelte-app",
+  "name": "fx-rack",
   "version": "1.0.0",
   "main": "main.js",
+  "author": "TeqTrue",
   "scripts": {
     "compile": "cmake-js compile",
     "dev": "rollup -c -w",
     "start": "electron .",
-    "cs": "npm run compile && npm run dev"
+    "cs": "npm run compile && npm run dev",
+    "build": "npm run compile && rollup -c && electron-builder",
+    "rollup": "rollup -c"
   },
   "cmake-js": {
     "runtime": "electron",
     "runtimeVersion": "8.5.3",
     "arch": "x64"
   },
+  "build": {
+    "productName": "FX Rack",
+    "appId": "TeqTrue.FXRack",
+    "files": [
+      "main.js",
+      "public/**/*",
+      "build/Release/*"
+    ],
+    "win": {
+      "target": ["portable"]
+    },
+    "portable": {
+      "artifactName": "fx-rack.exe"
+    },
+    "asarUnpack": ["build/Release/*"],
+    "directories": {
+      "output": "dist"
+    }
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
     "@tsconfig/svelte": "^1.0.0",
+    "@types/node": "^14.14.6",
     "cmake-js": "6.1.0",
     "electron": "8.5.3",
+    "electron-builder": "^22.9.1",
     "electron-reload": "^1.5.0",
     "rollup": "^2.3.4",
     "rollup-plugin-svelte": "^6.0.0",
@@ -29,8 +53,5 @@
     "svelte-preprocess": "^4.0.0",
     "tslib": "^2.0.0",
     "typescript": "^3.9.3"
-  },
-  "dependencies": {
-    "@types/node": "^14.14.6"
   }
 }

@@ -32,7 +32,7 @@ function serve() {
 export default {
 	input: 'src/main.ts',
 	output: {
-		sourcemap: true,
+		sourcemap: false,
 		format: 'iife',
 		name: 'app',
 		file: 'public/build/bundle.js'
@@ -44,7 +44,7 @@ export default {
 			// we'll extract any component CSS out into
 			// a separate file - better for performance
 			css: css => {
-				css.write('bundle.css');
+				css.write('bundle.css', false);
 			},
 			preprocess: sveltePreprocess(),
 		}),
@@ -55,7 +55,7 @@ export default {
 		// consult the documentation for details:
 		// https://github.com/rollup/plugins/tree/master/packages/commonjs
 		typescript({
-			sourceMap: !production,
+			sourceMap: false,
 			inlineSources: !production
 		}),
 		resolve({
@@ -67,7 +67,7 @@ export default {
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
 		production && terser(),
-		serve()
+		!production && serve(),
 	],
 	watch: {
 		clearScreen: false
