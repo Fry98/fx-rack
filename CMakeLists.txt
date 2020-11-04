@@ -6,9 +6,6 @@ OPTION (BUILD_SHARED_LIBS "Build shared libraries." ON)
 include_directories(${CMAKE_SOURCE_DIR}/native/avlib/include)
 include_directories(${CMAKE_JS_INC})
 
-add_definitions("-D_SCL_SECURE_NO_WARNINGS")
-find_package(SDL)
-
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 add_subdirectory(native/avlib/src)
