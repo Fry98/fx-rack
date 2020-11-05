@@ -4,12 +4,11 @@
   "main": "main.js",
   "author": "TeqTrue",
   "scripts": {
-    "compile": "cmake-js compile",
-    "dev": "rollup -c -w",
+    "compile": "cmake-js compile -D",
+    "dev": "cross-env NODE_ENV=development rollup -c -w",
     "start": "electron .",
     "cs": "npm run compile && npm run dev",
-    "build": "npm run compile && rollup -c && electron-builder",
-    "rollup": "rollup -c"
+    "build": "cmake-js compile && rollup -c && electron-builder"
   },
   "cmake-js": {
     "runtime": "electron",
@@ -25,12 +24,16 @@
       "build/Release/*"
     ],
     "win": {
-      "target": ["portable"]
+      "target": [
+        "portable"
+      ]
     },
     "portable": {
       "artifactName": "fx-rack.exe"
     },
-    "asarUnpack": ["build/Release/*"],
+    "asarUnpack": [
+      "build/Release/*"
+    ],
     "directories": {
       "output": "dist"
     }
@@ -42,6 +45,7 @@
     "@tsconfig/svelte": "^1.0.0",
     "@types/node": "^14.14.6",
     "cmake-js": "6.1.0",
+    "cross-env": "^7.0.2",
     "electron": "8.5.3",
     "electron-builder": "^22.9.1",
     "electron-reload": "^1.5.0",

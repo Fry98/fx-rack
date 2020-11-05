@@ -1,8 +1,9 @@
+const dev = process.env.NODE_ENV === 'development';
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
-const fxRack = require('./build/Release/fx-rack');
+const fxRack = require(`./build/${dev ? 'Debug' : 'Release'}/fx-rack`);
 const path = require('path');
 
-if (process.env.NODE_ENV === 'development') {
+if (dev) {
   require('electron-reload')(
     path.join(__dirname, 'public'), {
       electron: path.join(__dirname, 'node_modules', '.bin', 'electron.cmd')
@@ -59,4 +60,8 @@ ipcMain.on('play', () => {
 
 ipcMain.on('stop', () => {
   fxRack.stop();
+});
+
+fxRack.onCursorMove(cursor => {
+  console.log(cursor);
 });
