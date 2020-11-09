@@ -28,6 +28,8 @@ namespace fx_rack {
   using Napi::Number;
 
   std::atomic<bool> active(false);
+  std::atomic<size_t> cursor(0);
+  Duration duration;
   WaveFile* current_file = nullptr;
   ThreadSafeFunction tsfn;
 
@@ -52,8 +54,8 @@ namespace fx_rack {
 
     String filepath = info[0].As<String>();
     try {
-      Duration duration;
-      WaveFile* new_file = new WaveFile(std::string(filepath), duration);
+      cursor = 0;
+      WaveFile* new_file = new WaveFile(std::string(filepath), &cursor, duration);
       if (current_file != nullptr) delete current_file;
       current_file = new_file;
 
@@ -76,8 +78,10 @@ namespace fx_rack {
       return;
     }
 
+    if (cursor == duration.length) cursor = 0;
     current_file->set_cursor_cb(&tsfn);
     active = true;
+
     std::thread(play_worker).detach();
   }
 
@@ -100,10 +104,16 @@ namespace fx_rack {
     );
   }
 
+  void reset(const CallbackInfo& info) {
+    active = false;
+    cursor = 0;
+  }
+
   Object initialize(Env env, Object exports) {
     NAPI_FUNCTION("load", load);
     NAPI_FUNCTION("play", play);
     NAPI_FUNCTION("stop", stop);
+    NAPI_FUNCTION("reset", reset);
     NAPI_FUNCTION("onCursorMove", on_cursor_move);
     return exports;
   }

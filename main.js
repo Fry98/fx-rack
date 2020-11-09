@@ -43,9 +43,8 @@ function createWindow () {
     }
   });
 
-  ipcMain.on('stop', () => {
-    fxRack.stop();
-  });
+  ipcMain.on('stop', () => fxRack.stop());
+  ipcMain.on('reset', () => fxRack.reset());
 
   fxRack.onCursorMove(cursor => {
     win.webContents.send('cursorMove', cursor);

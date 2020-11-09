@@ -13,7 +13,7 @@
 namespace iimavlib {
 
 WaveFile::WaveFile(const std::string& filename, audio_params_t params)
-:params_(params),mono_source_(false)
+:params_(params),mono_source_(false), cursor(nullptr)
 {
 	file_.open(filename,std::ios::binary | std::ios::out | std::ios::trunc);
 	if (!file_.is_open()) throw std::runtime_error("Failed to open the output file");
@@ -23,7 +23,7 @@ WaveFile::WaveFile(const std::string& filename, audio_params_t params)
 	update(0);
 }
 
-WaveFile::WaveFile(const std::string& filename, Duration& duration):mono_source_(false)
+WaveFile::WaveFile(const std::string& filename, std::atomic<size_t>* cursor, Duration& duration):mono_source_(false), cursor(cursor)
 {
 	file_.open(filename,std::ios::binary | std::ios::in);
 	if (!file_.is_open()) throw std::runtime_error("Failed to open the input file");
@@ -86,11 +86,13 @@ error_type_t WaveFile::read_data(std::vector<audio_sample_t>& data, size_t& samp
 {
 	size_t max_samples = data.size();
 	size_t invalid = 0;
+	size_t cursor_cpy = cursor->load();
+
 	if (sample_count > max_samples) sample_count = max_samples;
 	if (!mono_source_) {
 		size_t data_size = stereo_data.size();
 		for (size_t i = 0; i < sample_count; i++) {
-			size_t idx = cursor + i;
+			size_t idx = cursor_cpy + i;
 			if (idx < data_size) {
 				data[i] = stereo_data[idx];
 			} else {
@@ -101,9 +103,9 @@ error_type_t WaveFile::read_data(std::vector<audio_sample_t>& data, size_t& samp
 	} else {
 		size_t data_size = mono_data.size();
 		for (size_t i = 0; i < sample_count; i++) {
-			size_t idx = cursor + i;
+			size_t idx = cursor_cpy + i;
 			if (idx < data_size) {
-				data[i].left = mono_data[cursor + i];
+				data[i].left = mono_data[idx];
 			} else {
 				data[i].left = 0;
 				invalid++;
@@ -111,13 +113,12 @@ error_type_t WaveFile::read_data(std::vector<audio_sample_t>& data, size_t& samp
 		}
 	}
 
-	int cursor_cpy = cursor;
 	tsfn->BlockingCall((void*) nullptr, [cursor_cpy](Napi::Env env, Napi::Function jscb, void* value) {
 		jscb.Call({ Napi::Number::New(env, cursor_cpy) });
 	});
 
 	sample_count = sample_count - invalid;
-	cursor += sample_count;
+	cursor->store(cursor_cpy + sample_count);
 	return error_type_t::ok;
 }
 

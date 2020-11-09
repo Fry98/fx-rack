@@ -13,11 +13,8 @@
 	const play = () => {
 		playing = !playing;
 		if (playing) {
-			if (cursor < meta.length) {
-				ipcRenderer.send('play')
-			} else {
-				setTimeout(() => playing = false, 200);
-			}
+			if (cursor === meta.length) cursor = 0;
+			ipcRenderer.send('play');
 		} else {
 			ipcRenderer.send('stop');
 		}
@@ -30,9 +27,16 @@
 				{ name: 'Wave File', extensions: ['wav'] }
 			]
 		}).then((files: any) => {
+			if (files.filePaths.length === 0) return;
 			ipcRenderer.send('load', files.filePaths[0]);
 			filename = files.filePaths[0].split('\\').pop();
 		});
+	};
+
+	const stop = () => {
+		playing = false;
+		cursor = 0;
+		ipcRenderer.send('reset');
 	};
 
 	ipcRenderer.on('cursorMove', (_, value: number) => {
@@ -44,6 +48,7 @@
 
 	ipcRenderer.on('meta', (_, value: AudioMeta) => {
 		meta = value;
+		playing = false;
 		cursor = 0;
 	});
 </script>
@@ -56,6 +61,7 @@
 		filename={filename}
 		on:play={play}
 		on:load={load}
+		on:stop={stop}
 	/>
 </main>
 

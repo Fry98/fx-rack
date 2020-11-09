@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <atomic>
+
 namespace iimavlib {
 enum class read_mode_t {
 	read, write
@@ -79,7 +81,7 @@ public:
 	 * Throws std::runtime_exception when the file doesn't exist or the header is corrupted
 	 * @param filename Name of the file to read
 	 */
-	WaveFile(const std::string& filename, Duration& duration);
+	WaveFile(const std::string& filename, std::atomic<size_t>* cursor, Duration& duration);
 
 
 	/**
@@ -115,7 +117,7 @@ private:
 	std::vector<int16_t> mono_buffer_;
 	std::vector<int16_t> mono_data;
 	std::vector<audio_sample_t> stereo_data;
-	size_t cursor = 0;
+	std::atomic<size_t>* cursor;
 	Napi::ThreadSafeFunction* tsfn = nullptr;
 
 	void update(size_t new_data_size = 0);

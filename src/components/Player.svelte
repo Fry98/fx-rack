@@ -5,6 +5,11 @@
   import Icon from 'fa-svelte';
 
   const dispatch = createEventDispatcher();
+  const padSecs = (secs: number) => {
+    const str = secs.toString();
+    return str.length > 1 ? str : `0${str}`
+  };
+
   export let meta: AudioMeta;
   export let filename: string;
   export let cursor: number;
@@ -14,6 +19,18 @@
   $: if (meta !== null) {
     prgWidth = Math.round((cursor / meta.length) * 367);
   }
+
+  let secs = 0;
+  $: if (meta !== null) {
+    secs = Math.round(meta.length / meta.rate);
+  }
+
+  $: timestamp = () => {
+    const elapsed = Math.round(cursor / meta.rate);
+    const elpStr = `${Math.floor(elapsed / 60)}:${padSecs(elapsed % 60)}`;
+    const totalStr = `${Math.floor(secs / 60)}:${padSecs(secs % 60)}`;
+    return `${elpStr} / ${totalStr}`;
+  };
 </script>
 
 {#if meta}
@@ -29,7 +46,7 @@
       <div class='prg' style='width: {prgWidth}px'></div>
     </div>
     <div class='ut'>
-      <div class='ts'>0:00 / 0:17</div>
+      <div class='ts'>{timestamp()}</div>
       <div class='ctrls'>
         <div on:click={() => dispatch('play')}>
           <Icon icon={playing ? faPause : faPlay} class='ctrl-btn play' />
@@ -60,7 +77,7 @@
 
   .empty:hover {
     cursor: pointer;
-    color: rgb(100, 235, 143);
+    color: rgb(0, 194, 65);
   }
 
   .empty span {
@@ -133,7 +150,7 @@
 
   .upload:hover {
     cursor: pointer;
-    color: rgb(100, 235, 143);
+    color: rgb(0, 194, 65);
   }
 
   .upload span {
