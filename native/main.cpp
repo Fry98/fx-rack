@@ -1,99 +1,112 @@
-#include <node.h>
-#include <uv.h>
+#include <napi.h>
+#include <atomic>
+#include "duration.h"
 #include "iimavlib.h"
 #include "iimavlib/WaveFile.h"
 #include "iimavlib/WaveSource.h"
-#include <atomic>
+
+#define NAPI_FUNCTION(name, func) \
+  exports.Set( \
+    String::New(env, name), \
+    Function::New(env, func) \
+  );
 
 namespace fx_rack {
-  using v8::Exception;
-  using v8::FunctionCallbackInfo;
-  using v8::Isolate;
-  using v8::Local;
-  using v8::Number;
-  using v8::Object;
-  using v8::String;
-  using v8::Value;
-  using v8::Context;
   using iimavlib::WaveFile;
   using iimavlib::WaveSource;
   using iimavlib::PlatformDevice;
   using iimavlib::PlatformSink;
   using iimavlib::filter_chain;
+  using Napi::CallbackInfo;
+  using Napi::TypeError;
+  using Napi::Object;
+  using Napi::Function;
+  using Napi::String;
+  using Napi::Env;
+  using Napi::Value;
+  using Napi::ThreadSafeFunction;
+  using Napi::Number;
 
   std::atomic<bool> active(false);
   WaveFile* current_file = nullptr;
+  ThreadSafeFunction tsfn;
 
-  struct Work {
-    uv_work_t request;
-  };
-
-  void play_worker(uv_work_t *req) {
+  void play_worker() {
     auto device_id = PlatformDevice::default_device();
     auto chain = filter_chain<WaveSource>(*current_file, active)
       .add<PlatformSink>(device_id)
       .sink();
 
     chain->run();
-  }
-
-  void play_worker_cb(uv_work_t *req, int status) {
-    delete req->data;
-  }
-
-  void load(const FunctionCallbackInfo<Value>& args) {
-    Isolate* isolate = args.GetIsolate();
-    String::Utf8Value filename(isolate, args[0]);
-
-    if (args.Length() != 1 || !args[0]->IsString()) {
-      isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Invalid arguments").ToLocalChecked()
-      ));
-      return;
-    }
-
-    try {
-      WaveFile* new_file = new WaveFile(*filename);
-      if (current_file != nullptr) delete current_file;
-      current_file = new_file;
-    } catch (...) {
-      isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Error loading audio file").ToLocalChecked()
-      ));
-    }
-  }
-
-  void play(const FunctionCallbackInfo<Value>& args) {
-    if (active) return;
-
-    Isolate* isolate = args.GetIsolate();
-    if (current_file == nullptr) {
-      isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "No audio file loaded").ToLocalChecked()
-      ));
-      return;
-    }
-
-    active = true;
-    Work* work = new Work();
-    work->request.data = work;
-    uv_queue_work(uv_default_loop(), &work->request, play_worker, play_worker_cb);
-  }
-
-  void stop(const FunctionCallbackInfo<Value>& args) {
     active = false;
   }
 
-  void on_finished(const FunctionCallbackInfo<Value>& args) {
+  Value load(const CallbackInfo& info) {
+    active = false;
+    Env env = info.Env();
 
+    if (info.Length() != 1 || !info[0].IsString()) {
+      TypeError::New(env, "Invalid arguments").ThrowAsJavaScriptException();
+      return env.Null();
+    }
+
+    String filepath = info[0].As<String>();
+    try {
+      Duration duration;
+      WaveFile* new_file = new WaveFile(std::string(filepath), duration);
+      if (current_file != nullptr) delete current_file;
+      current_file = new_file;
+
+      Object obj = Object::New(env);
+      obj.Set("rate", duration.rate);
+      obj.Set("length", duration.length);
+      return obj;
+    } catch (...) {
+      TypeError::New(env, "Error loading audio file").ThrowAsJavaScriptException();
+      return env.Null();
+    }
   }
 
-  void initialize(Local<Object> exports) {
-    NODE_SET_METHOD(exports, "load", load);
-    NODE_SET_METHOD(exports, "play", play);
-    NODE_SET_METHOD(exports, "stop", stop);
-    NODE_SET_METHOD(exports, "onFinished", on_finished);
+  void play(const CallbackInfo& info) {
+    Env env = info.Env();
+    if (active) return;
+
+    if (current_file == nullptr) {
+      TypeError::New(env, "No audio file loaded").ThrowAsJavaScriptException();
+      return;
+    }
+
+    current_file->set_cursor_cb(&tsfn);
+    active = true;
+    std::thread(play_worker).detach();
   }
 
-  NODE_MODULE(NODE_GYP_MODULE_NAME, initialize);
+  void stop(const CallbackInfo& info) {
+    active = false;
+  }
+
+  void on_cursor_move(const CallbackInfo& info) {
+    Env env = info.Env();
+
+    if (info.Length() != 1 || !info[0].IsFunction()) {
+      TypeError::New(env, "Invalid arguments").ThrowAsJavaScriptException();
+      return;
+    }
+
+    tsfn = ThreadSafeFunction::New(
+      env,
+      info[0].As<Napi::Function>(),
+      "TSFN", 0, 1
+    );
+  }
+
+  Object initialize(Env env, Object exports) {
+    NAPI_FUNCTION("load", load);
+    NAPI_FUNCTION("play", play);
+    NAPI_FUNCTION("stop", stop);
+    NAPI_FUNCTION("onCursorMove", on_cursor_move);
+    return exports;
+  }
+
+  NODE_API_MODULE(NODE_GYP_MODULE_NAME, initialize)
 }

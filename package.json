@@ -12,7 +12,7 @@
   },
   "cmake-js": {
     "runtime": "electron",
-    "runtimeVersion": "8.5.3",
+    "runtimeVersion": "10.1.5",
     "arch": "x64"
   },
   "build": {
@@ -39,6 +39,7 @@
     }
   },
   "devDependencies": {
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
@@ -46,9 +47,11 @@
     "@types/node": "^14.14.6",
     "cmake-js": "6.1.0",
     "cross-env": "^7.0.2",
-    "electron": "8.5.3",
+    "electron": "^10.1.5",
     "electron-builder": "^22.9.1",
     "electron-reload": "^1.5.0",
+    "fa-svelte": "^3.1.0",
+    "node-addon-api": "^3.0.2",
     "rollup": "^2.3.4",
     "rollup-plugin-svelte": "^6.0.0",
     "rollup-plugin-terser": "^7.0.0",

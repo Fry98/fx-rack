@@ -2,6 +2,16 @@ SET (IIMA_LINK )
 SET (IIMA_LIBS )
 SET (IIMA_INCLUDE )
 
+add_definitions(-DNAPI_VERSION=5)
+add_definitions(-DNAPI_EXPERIMENTAL)
+
+execute_process(COMMAND node -p "require('node-addon-api').include"
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE NODE_ADDON_API_DIR
+)
+string(REPLACE "\n" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
+string(REPLACE "\"" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
+
 SET (IIMA_SRC Utils.cpp AudioTypes.cpp AudioFilter.cpp AudioSink.cpp
 				WaveFile.cpp WaveSource.cpp WaveSink.cpp
 				filters/SineMultiply.cpp filters/NullFilter.cpp
@@ -48,10 +58,12 @@ IF (SDL_FOUND)
 	SET(IIMA_INCLUDE ${IIMA_INCLUDE} ${SDL_INCLUDE_DIR})
 ENDIF()
 
-add_library(iimav ${IIMA_SRC})
+include_directories(${CMAKE_JS_INC})
+add_library(iimav ${IIMA_SRC} ${CMAKE_JS_SRC})
 link_directories ( ${IIMA_LINK} )
 include_directories ( ${IIMA_INCLUDE} )
-target_link_libraries ( iimav ${IIMA_LIBS})
+target_include_directories(iimav PRIVATE ${NODE_ADDON_API_DIR})
+target_link_libraries ( iimav ${IIMA_LIBS} ${CMAKE_JS_LIB})
 
 SET_TARGET_PROPERTIES( iimav PROPERTIES SOVERSION 1 VERSION 1.1.0 )
 install(TARGETS iimav 		RUNTIME DESTINATION bin

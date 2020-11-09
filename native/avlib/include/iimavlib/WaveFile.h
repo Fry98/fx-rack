@@ -10,6 +10,8 @@
 #ifndef WAVEFILE_H_
 #define WAVEFILE_H_
 
+#include <napi.h>
+#include "../../../duration.h"
 #include "AudioTypes.h"
 #include "PlatformDefs.h"
 #include <fstream>
@@ -77,7 +79,7 @@ public:
 	 * Throws std::runtime_exception when the file doesn't exist or the header is corrupted
 	 * @param filename Name of the file to read
 	 */
-	WaveFile(const std::string& filename);
+	WaveFile(const std::string& filename, Duration& duration);
 
 
 	/**
@@ -103,6 +105,8 @@ public:
 	 */
 	audio_params_t get_params() const;
 
+	void set_cursor_cb(Napi::ThreadSafeFunction* tsfn);
+
 private:
 	wav_header_t header_;
 	audio_params_t	params_;
@@ -112,6 +116,7 @@ private:
 	std::vector<int16_t> mono_data;
 	std::vector<audio_sample_t> stereo_data;
 	size_t cursor = 0;
+	Napi::ThreadSafeFunction* tsfn = nullptr;
 
 	void update(size_t new_data_size = 0);
 
