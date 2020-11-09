@@ -118,7 +118,9 @@ error_type_t WaveFile::read_data(std::vector<audio_sample_t>& data, size_t& samp
 	});
 
 	sample_count = sample_count - invalid;
-	cursor->store(cursor_cpy + sample_count);
+	if (cursor->load() == cursor_cpy) {
+		cursor->store(cursor_cpy + sample_count);
+	}
 	return error_type_t::ok;
 }
 

@@ -45,6 +45,7 @@ function createWindow () {
 
   ipcMain.on('stop', () => fxRack.stop());
   ipcMain.on('reset', () => fxRack.reset());
+  ipcMain.on('skip', (_, value) => fxRack.skip(value));
 
   fxRack.onCursorMove(cursor => {
     win.webContents.send('cursorMove', cursor);

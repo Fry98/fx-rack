@@ -109,11 +109,25 @@ namespace fx_rack {
     cursor = 0;
   }
 
+  void skip(const CallbackInfo& info) {
+    Env env = info.Env();
+
+    if (info.Length() != 1 || !info[0].IsNumber()) {
+      TypeError::New(env, "Invalid arguments").ThrowAsJavaScriptException();
+      return;
+    }
+
+    Number idx = info[0].As<Number>();
+    size_t cursor_idx = (size_t) double(idx);
+    cursor = cursor_idx;
+  }
+
   Object initialize(Env env, Object exports) {
     NAPI_FUNCTION("load", load);
     NAPI_FUNCTION("play", play);
     NAPI_FUNCTION("stop", stop);
     NAPI_FUNCTION("reset", reset);
+    NAPI_FUNCTION("skip", skip);
     NAPI_FUNCTION("onCursorMove", on_cursor_move);
     return exports;
   }

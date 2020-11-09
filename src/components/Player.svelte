@@ -5,11 +5,6 @@
   import Icon from 'fa-svelte';
 
   const dispatch = createEventDispatcher();
-  const padSecs = (secs: number) => {
-    const str = secs.toString();
-    return str.length > 1 ? str : `0${str}`
-  };
-
   export let meta: AudioMeta;
   export let filename: string;
   export let cursor: number;
@@ -31,6 +26,20 @@
     const totalStr = `${Math.floor(secs / 60)}:${padSecs(secs % 60)}`;
     return `${elpStr} / ${totalStr}`;
   };
+
+  const padSecs = (secs: number) => {
+    const str = secs.toString();
+    return str.length > 1 ? str : `0${str}`
+  };
+
+  const skip = (e: MouseEvent) => {
+    const el = e.currentTarget as HTMLDivElement;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const ratio = x / rect.width;
+    const sample = Math.floor(meta.length * ratio);
+    dispatch('skip', sample);
+  };
 </script>
 
 {#if meta}
@@ -42,7 +51,7 @@
       </div>
       <div>{filename}</div>
     </header>
-    <div class='timeline'>
+    <div class='timeline' on:click={skip}>
       <div class='prg' style='width: {prgWidth}px'></div>
     </div>
     <div class='ut'>
@@ -101,6 +110,7 @@
     border-radius: 5px;
     overflow: hidden;
     flex-shrink: 0;
+    cursor: pointer;
   }
 
   .prg {

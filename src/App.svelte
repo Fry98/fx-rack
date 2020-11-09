@@ -39,6 +39,11 @@
 		ipcRenderer.send('reset');
 	};
 
+	const skip = (e: any) => {
+		cursor = e.detail;
+		ipcRenderer.send('skip', e.detail);
+	};
+
 	ipcRenderer.on('cursorMove', (_, value: number) => {
 		cursor = value;
 		if (cursor >= meta.length) {
@@ -62,6 +67,7 @@
 		on:play={play}
 		on:load={load}
 		on:stop={stop}
+		on:skip={skip}
 	/>
 </main>
 
