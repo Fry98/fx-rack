@@ -86,7 +86,7 @@
 
   .empty:hover {
     cursor: pointer;
-    color: rgb(0, 194, 65);
+    color: rgb(55, 179, 243);
   }
 
   .empty span {
@@ -105,7 +105,7 @@
 
   .timeline {
     height: 10px;
-    background: rgb(104, 104, 104);
+    background: rgb(43, 43, 46);
     position: relative;
     border-radius: 5px;
     overflow: hidden;
@@ -114,7 +114,7 @@
   }
 
   .prg {
-    background: rgb(0, 194, 65);
+    background: rgb(55, 179, 243);
     position: absolute;
     top: 0px;
     left: 0px;
@@ -134,13 +134,13 @@
     display: flex;
     justify-content: center;
     font-size: 20px;
-    color: rgb(104, 104, 104);
+    color: rgb(162, 162, 167);
   }
 
   .ts {
     line-height: 1em;
     font-size: 15px;
-    color: rgb(104, 104, 104);
+    color: rgb(204, 204, 204);
     font-weight: bold;
   }
 
@@ -160,7 +160,7 @@
 
   .upload:hover {
     cursor: pointer;
-    color: rgb(0, 194, 65);
+    color: rgb(55, 179, 243);
   }
 
   .upload span {
@@ -179,6 +179,6 @@
   }
 
   :global(.ctrl-btn:hover) {
-    color: rgb(173, 173, 173);
+    color: rgb(55, 179, 243);
   }
 </style>
