@@ -1,6 +1,7 @@
 #include <napi.h>
 #include <atomic>
 #include "duration.h"
+#include "Filter.h"
 #include "iimavlib.h"
 #include "iimavlib/WaveFile.h"
 #include "iimavlib/WaveSource.h"
@@ -36,6 +37,7 @@ namespace fx_rack {
   void play_worker() {
     auto device_id = PlatformDevice::default_device();
     auto chain = filter_chain<WaveSource>(*current_file, active)
+      .add<Filter>(LPF, 400, 5000.0)
       .add<PlatformSink>(device_id)
       .sink();
 
