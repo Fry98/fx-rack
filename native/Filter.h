@@ -25,7 +25,6 @@ namespace fx_rack {
       FilterType type;
       double cutoff;
       double sampFreq = convert_rate_to_int(get_params().rate);
-      double lambda;
       double* coeffs;
       audio_sample_t* buffer;
       void computeLPF();

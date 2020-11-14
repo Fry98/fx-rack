@@ -8,7 +8,6 @@ namespace fx_rack {
     FilterType type,
     unsigned int num_taps, double cutoff
   ): AudioFilter(child), num_taps(num_taps), cutoff(cutoff), type(type) {
-    lambda = M_PI * cutoff / (sampFreq / 2);
     coeffs = new double[num_taps];
     buffer = new audio_sample_t[num_taps];
 
@@ -17,20 +16,28 @@ namespace fx_rack {
   }
 
   Filter::~Filter() {
-    delete coeffs;
-    delete buffer;
+    delete[] coeffs;
+    delete[] buffer;
   }
 
   void Filter::computeLPF() {
+    double omega = 2 * M_PI * (cutoff / sampFreq);
+
     for (size_t i = 0; i < num_taps; i++) {
-      double mm = i - (num_taps - 1.0) / 2.0;
-      if (mm == 0) coeffs[i] = lambda / M_PI;
-      else coeffs[i] = sin(mm * lambda) / (mm * M_PI);
+      unsigned int n = i - (num_taps / 2);
+      if (n != 0) {
+        coeffs[i] = sin(omega * n) / (M_PI * n);
+      } else {
+        coeffs[i] = omega / M_PI;
+      }
     }
   }
 
   void Filter::computeHPF() {
-
+    computeLPF();
+    for (size_t i = 0; i < num_taps; i++) {
+      if (i % 2 == 1) coeffs[i] = -coeffs[i];
+    }
   }
 
   void Filter::process_sample(audio_sample_t& sample) {
@@ -39,14 +46,16 @@ namespace fx_rack {
     }
     buffer[0] = sample;
 
-    audio_sample_t res(0, 0);
+    double left = 0;
+    double right = 0;
+
     for (size_t i = 0; i < num_taps; i++) {
-      res.left += (int16_t) (buffer[i].left * coeffs[i]);
-      res.right += (int16_t) (buffer[i].right * coeffs[i]);
+      left += buffer[i].left * coeffs[i];
+      right += buffer[i].right * coeffs[i];
     }
 
-    sample.left = res.left;
-    sample.right = res.right;
+    sample.left = (int16_t) left;
+    sample.right = (int16_t) right;
   }
 
   error_type_t Filter::do_process(audio_buffer_t& buffer) {

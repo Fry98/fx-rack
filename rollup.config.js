@@ -55,8 +55,7 @@ export default {
 		// consult the documentation for details:
 		// https://github.com/rollup/plugins/tree/master/packages/commonjs
 		typescript({
-			sourceMap: false,
-			inlineSources: !production
+			sourceMap: false
 		}),
 		resolve({
 			browser: true,

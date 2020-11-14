@@ -37,7 +37,7 @@ namespace fx_rack {
   void play_worker() {
     auto device_id = PlatformDevice::default_device();
     auto chain = filter_chain<WaveSource>(*current_file, active)
-      .add<Filter>(LPF, 400, 5000.0)
+      .add<Filter>(LPF, 301, 7000.0)
       .add<PlatformSink>(device_id)
       .sink();
 
