@@ -48,7 +48,7 @@
   <div class='knob-desc'>{name}</div>
 </div>
 
-<style>
+<style lang='scss'>
   .knob-wrap {
     display: inline-block;
   }
@@ -70,18 +70,18 @@
     position: relative;
     cursor: pointer;
     margin-bottom: -7px;
-  }
 
-  .knob::after {
-    content: '';
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    background-image: url('../assets/knob_pointer.png');
-    background-size: contain;
-    background-position: center center;
-    transform: rotate(var(--knob-rot));
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      background-image: url('../assets/knob_pointer.png');
+      background-size: contain;
+      background-position: center center;
+      transform: rotate(var(--knob-rot));
+    }
   }
 </style>

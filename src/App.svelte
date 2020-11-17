@@ -113,7 +113,11 @@
 	/>
 </main>
 
-<style>
+<style lang="scss">
+	:global {
+		@import './style/global.scss';
+	}
+
 	main {
 		text-align: center;
 	}

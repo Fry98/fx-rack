@@ -73,7 +73,7 @@
   </div>
 {/if}
 
-<style>
+<style lang='scss'>
   .empty {
     height: 113px;
     display: flex;
@@ -82,15 +82,15 @@
     font-size: 1.3em;
     color: rgb(255, 255, 255);
     transition-duration: .2s;
-  }
 
-  .empty:hover {
-    cursor: pointer;
-    color: rgb(55, 179, 243);
-  }
+    & span {
+      margin-left: 10px;
+    }
 
-  .empty span {
-    margin-left: 10px;
+    &:hover {
+      cursor: pointer;
+      color: rgb(55, 179, 243);
+    }
   }
 
   .player {
@@ -127,7 +127,6 @@
     align-items: flex-start;
     margin: 0px 4px;
     margin-top: 10px;
-    /* background: red; */
   }
 
   .ctrls {
@@ -156,17 +155,17 @@
     display: flex;
     align-items: center;
     transition-duration: .2s;
-  }
 
-  .upload:hover {
-    cursor: pointer;
-    color: rgb(55, 179, 243);
-  }
+    & span {
+      margin-left: 5px;
+      font-size: 11px;
+      line-height: 1em;
+    }
 
-  .upload span {
-    margin-left: 5px;
-    font-size: 11px;
-    line-height: 1em;
+    &:hover {
+      cursor: pointer;
+      color: rgb(55, 179, 243);
+    }
   }
 
   :global(.play) {
