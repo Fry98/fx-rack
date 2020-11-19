@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "Filter.h"
 #include <math.h>
+#include <iostream>
 
 namespace fx_rack {
   Filter::Filter(
@@ -13,6 +14,7 @@ namespace fx_rack {
 
     for (size_t i = 0; i < num_taps; i++) buffer[i] = 0;
     type == LPF ? computeLPF() : computeHPF();
+    normalizeCoeffs();
   }
 
   Filter::~Filter() {
@@ -20,8 +22,14 @@ namespace fx_rack {
     delete[] buffer;
   }
 
+  void Filter::normalizeCoeffs() {
+    double sum = 0.0;
+    for (size_t i = 0; i < num_taps; i++) sum += abs(coeffs[i]);
+    for (size_t i = 0; i < num_taps; i++) coeffs[i] = coeffs[i] / sum;
+  }
+
   void Filter::computeLPF() {
-    double omega = 2 * M_PI * (cutoff / sampFreq);
+    double omega = 2.0 * M_PI * (cutoff / sampFreq);
 
     for (size_t i = 0; i < num_taps; i++) {
       unsigned int n = i - (num_taps / 2);
@@ -46,8 +54,8 @@ namespace fx_rack {
     }
     buffer[0] = sample;
 
-    double left = 0;
-    double right = 0;
+    double left = 0.0;
+    double right = 0.0;
 
     for (size_t i = 0; i < num_taps; i++) {
       left += buffer[i].left * coeffs[i];

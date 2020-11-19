@@ -29,6 +29,7 @@ namespace fx_rack {
       audio_sample_t* buffer;
       void computeLPF();
       void computeHPF();
+      void normalizeCoeffs();
       void process_sample(audio_sample_t& sample);
   };
 }
