@@ -59,6 +59,7 @@
     margin: 0px 7px;
     font-size: .8em;
     color: white;
+    text-align: center;
   }
 
   .knob {

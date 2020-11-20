@@ -1,20 +1,43 @@
 <script lang="ts">
 	import { onDestroy, setContext } from 'svelte';
 	import { writable } from 'svelte/store';
-	import Knob from './components/Knob.svelte';
+	import Filter from './components/Filter.svelte';
 	import Player from './components/Player.svelte';
-	import type { AudioMeta } from './types';
+	import type { Device, AudioMeta } from './types';
+	import { DeviceType } from './types';
 	const { ipcRenderer } = require('electron');
 	const { dialog } = require('electron').remote;
 
 	const precision = writable(false);
 	setContext('precision', precision);
 
-	let cursor: number = 0;
 	let filename: string = null;
 	let meta: AudioMeta = null;
 	let playing: boolean = false;
-	let vals = [10000, 20, 127];
+	let deviceCount = 0;
+	let cursor = 0;
+
+	let devices: Device[] = [
+		{
+			id: 0,
+			type: DeviceType.FILTER,
+			hp: false,
+			cutoff: 4000,
+			slope: 20
+		},
+		{
+			id: 1,
+			type: DeviceType.FILTER,
+			hp: false,
+			cutoff: 4000,
+			slope: 20
+		}
+	];
+
+	const removeDevice = (idx: number) => {
+		devices.splice(idx, 1);
+		devices = devices;
+	};
 
 	const play = () => {
 		playing = !playing;
@@ -93,29 +116,28 @@
 		on:stop={stop}
 		on:skip={skip}
 	/>
-	<Knob
-		name="Cutoff"
-		lowerBound={50}
-		upperBound={17000}
-		bind:value={vals[0]}
-	/>
-	<Knob
-		name="Q"
-		lowerBound={0}
-		upperBound={100}
-		bind:value={vals[1]}
-	/>
-	<Knob
-		name="Dry / Wet"
-		lowerBound={0}
-		upperBound={255}
-		bind:value={vals[2]}
-	/>
+	<div class='divider'></div>
+	{#each devices as device, i (device.id)}
+		{#if device.type === DeviceType.FILTER}
+			<Filter
+				bind:cutoff={device.cutoff}
+				bind:slope={device.slope}
+				bind:type={device.hp}
+				on:remove={() => removeDevice(i)}
+			/>
+		{/if}
+		<div class='divider'></div>
+	{/each}
 </main>
 
 <style lang="scss">
 	:global {
 		@import './style/global.scss';
+	}
+
+	.divider {
+		border-top: 1px solid rgb(129, 129, 129);
+		margin: 0px 20px;
 	}
 
 	main {

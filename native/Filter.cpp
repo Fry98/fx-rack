@@ -32,7 +32,7 @@ namespace fx_rack {
     double omega = 2.0 * M_PI * (cutoff / sampFreq);
 
     for (size_t i = 0; i < num_taps; i++) {
-      unsigned int n = i - (num_taps / 2);
+      size_t n = i - (num_taps / 2);
       if (n != 0) {
         coeffs[i] = sin(omega * n) / (M_PI * n);
       } else {

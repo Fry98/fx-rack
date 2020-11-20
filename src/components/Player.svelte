@@ -57,10 +57,10 @@
     <div class='ut'>
       <div class='ts'>{timestamp()}</div>
       <div class='ctrls'>
-        <div on:click={() => dispatch('play')}>
+        <div class='icon' on:click={() => dispatch('play')}>
           <Icon icon={playing ? faPause : faPlay} class='ctrl-btn play' />
         </div>
-        <div on:click={() => dispatch('stop')}>
+        <div class='icon' on:click={() => dispatch('stop')}>
           <Icon icon={faStop} class='ctrl-btn' />
         </div>
       </div>
@@ -75,7 +75,7 @@
 
 <style lang='scss'>
   .empty {
-    height: 113px;
+    height: 105px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -93,13 +93,17 @@
     }
   }
 
+  .icon {
+    line-height: 0px;
+  }
+
   .player {
     display: flex;
     justify-content: center;
     flex-direction: column;
     width: 100%;
     padding: 0px 15px;
-    height: 113px;
+    height: 105px;
     box-sizing: border-box;
   }
 
