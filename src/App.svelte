@@ -3,8 +3,11 @@
 	import { writable } from 'svelte/store';
 	import Filter from './components/Filter.svelte';
 	import Player from './components/Player.svelte';
+	import Icon from 'fa-svelte';
 	import type { Device, AudioMeta } from './types';
 	import { DeviceType } from './types';
+	import { faPlus } from '@fortawesome/free-solid-svg-icons';
+	import DeviceMenu from './components/DeviceMenu.svelte';
 	const { ipcRenderer } = require('electron');
 	const { dialog } = require('electron').remote;
 
@@ -13,29 +16,22 @@
 
 	let filename: string = null;
 	let meta: AudioMeta = null;
-	let playing: boolean = false;
+	let playing = false;
 	let deviceCount = 0;
+	let openMenu = false;
 	let cursor = 0;
-
-	let devices: Device[] = [
-		{
-			id: 0,
-			type: DeviceType.FILTER,
-			hp: false,
-			cutoff: 4000,
-			slope: 20
-		},
-		{
-			id: 1,
-			type: DeviceType.FILTER,
-			hp: false,
-			cutoff: 4000,
-			slope: 20
-		}
-	];
+	let devices: Device[] = [];
 
 	const removeDevice = (idx: number) => {
 		devices.splice(idx, 1);
+		devices = devices;
+	};
+
+	const addDevice = ({ detail }) => {
+		devices.push({
+			id: deviceCount++,
+			...detail
+		});
 		devices = devices;
 	};
 
@@ -105,30 +101,38 @@
 	});
 </script>
 
-<main>
-	<Player
-		cursor={cursor}
-		meta={meta}
-		playing={playing}
-		filename={filename}
-		on:play={play}
-		on:load={load}
-		on:stop={stop}
-		on:skip={skip}
-	/>
-	<div class='divider'></div>
-	{#each devices as device, i (device.id)}
-		{#if device.type === DeviceType.FILTER}
-			<Filter
-				bind:cutoff={device.cutoff}
-				bind:slope={device.slope}
-				bind:type={device.hp}
-				on:remove={() => removeDevice(i)}
-			/>
-		{/if}
+<DeviceMenu bind:open={openMenu} on:device={addDevice}>
+	<main>
+		<Player
+			{cursor}
+			{meta}
+			{playing}
+			{filename}
+			on:play={play}
+			on:load={load}
+			on:stop={stop}
+			on:skip={skip}
+		/>
+		{#each devices as device, i (device.id)}
+			<div class='divider'></div>
+			{#if device.type === DeviceType.FILTER}
+				<Filter
+					bind:cutoff={device.cutoff}
+					bind:slope={device.slope}
+					bind:type={device.hp}
+					on:remove={() => removeDevice(i)}
+				/>
+			{/if}
+		{/each}
 		<div class='divider'></div>
-	{/each}
-</main>
+		<div class='add-dev-wrap'>
+			<div class='add-dev' on:click={() => openMenu = true}>
+				<Icon icon={faPlus} />
+				<div>Add Device</div>
+			</div>
+		</div>
+	</main>
+</DeviceMenu>
 
 <style lang="scss">
 	:global {
@@ -142,5 +146,33 @@
 
 	main {
 		text-align: center;
+	}
+
+	.add-dev-wrap {
+		display: flex;
+		justify-content: center;
+		margin-top: 15px;
+	}
+
+	.add-dev {
+		font-size: 1.2em;
+		line-height: 1em;
+		border: 1px solid rgb(162, 162, 167);
+		border-radius: 7px;
+		color: rgb(162, 162, 167);
+		padding: 7px;
+		cursor: pointer;
+		transition-duration: .3s;
+		display: flex;
+		margin-bottom: 20px;
+
+		div {
+			margin-left: 7px;
+		}
+
+		&:hover {
+			color: white;
+			border-color: white;
+		}
 	}
 </style>
