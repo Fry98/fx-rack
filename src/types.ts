@@ -4,9 +4,9 @@ export interface AudioMeta {
 }
 
 export enum DeviceType {
-  FILTER,
-  REVERB,
-  DISTORTION
+  FILTER = 0,
+  REVERB = 1,
+  DISTORTION = 2
 }
 
 export interface Device {

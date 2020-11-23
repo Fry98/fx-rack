@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy, setContext } from 'svelte';
 	import { writable } from 'svelte/store';
+	import type { Writable } from 'svelte/store';
 	import Filter from './components/Filter.svelte';
 	import Player from './components/Player.svelte';
 	import Icon from 'fa-svelte';
@@ -11,6 +12,7 @@
 	const { ipcRenderer } = require('electron');
 	const { dialog } = require('electron').remote;
 
+	const devices: Writable<Device[]> = writable([]);
 	const precision = writable(false);
 	setContext('precision', precision);
 
@@ -20,26 +22,39 @@
 	let deviceCount = 0;
 	let openMenu = false;
 	let cursor = 0;
-	let devices: Device[] = [];
 
 	const removeDevice = (idx: number) => {
-		devices.splice(idx, 1);
-		devices = devices;
+		$devices.splice(idx, 1);
+		$devices = $devices;
 	};
 
 	const addDevice = ({ detail }) => {
-		devices.push({
+		$devices = [...$devices, {
 			id: deviceCount++,
 			...detail
+		}];
+	};
+
+	const getFilterParams = () => {
+		return $devices.map(dev => {
+			switch (dev.type) {
+				case DeviceType.FILTER:
+					return {
+						...dev,
+						slope: Math.round(dev.slope),
+						cutoff: Math.exp(Math.log(20) + dev.cutoff * (Math.log(20000) - Math.log(20)))
+					};
+				default:
+					return dev;
+			}
 		});
-		devices = devices;
 	};
 
 	const play = () => {
 		playing = !playing;
 		if (playing) {
 			if (cursor === meta.length) cursor = 0;
-			ipcRenderer.send('play');
+			ipcRenderer.send('play', getFilterParams());
 		} else {
 			ipcRenderer.send('stop');
 		}
@@ -59,15 +74,22 @@
 	};
 
 	const stop = () => {
+		ipcRenderer.send('reset');
 		playing = false;
 		cursor = 0;
-		ipcRenderer.send('reset');
 	};
 
 	const skip = (e: any) => {
 		cursor = e.detail;
 		ipcRenderer.send('skip', e.detail);
 	};
+
+	devices.subscribe(() => {
+		if (playing) {
+			playing = false;
+			ipcRenderer.send('stop');
+		}
+	});
 
 	ipcRenderer.on('cursorMove', (_, value: number) => {
 		cursor = value;
@@ -113,7 +135,7 @@
 			on:stop={stop}
 			on:skip={skip}
 		/>
-		{#each devices as device, i (device.id)}
+		{#each $devices as device, i (device.id)}
 			<div class='divider'></div>
 			{#if device.type === DeviceType.FILTER}
 				<Filter

@@ -23,6 +23,7 @@ add_subdirectory(native/avlib/include)
 
 add_library(${PROJECT_NAME} SHARED
   native/Filter.cpp
+  native/Device.cpp
   native/main.cpp
   ${CMAKE_JS_SRC}
 )

@@ -1,6 +1,8 @@
 #include <napi.h>
 #include <atomic>
-#include "duration.h"
+#include <iostream>
+#include "Duration.h"
+#include "Device.h"
 #include "Filter.h"
 #include "iimavlib.h"
 #include "iimavlib/WaveFile.h"
@@ -27,21 +29,39 @@ namespace fx_rack {
   using Napi::Value;
   using Napi::ThreadSafeFunction;
   using Napi::Number;
+  using Napi::Boolean;
+  using Napi::Array;
 
   std::atomic<bool> active(false);
   std::atomic<size_t> cursor(0);
   Duration duration;
   WaveFile* current_file = nullptr;
+  IDevice** devices = nullptr;
+  size_t device_count = 0;
   ThreadSafeFunction tsfn;
 
   void play_worker() {
     auto device_id = PlatformDevice::default_device();
-    auto chain = filter_chain<WaveSource>(*current_file, active)
+    auto chain = filter_chain<WaveSource>(*current_file, active);
+
+    for (size_t i = 0; i < device_count; i++) {
+      switch (devices[i]->getType()) {
+        case 0:
+          auto dev = static_cast<FilterDevice*>(devices[i]);
+          FilterType type = dev->hp ? HPF : LPF;
+          chain = chain.add<Filter>(type, dev->taps, dev->cutoff);
+          break;
+      }
+    }
+
+    auto tail = chain
       .add<PlatformSink>(device_id)
       .sink();
 
-    chain->run();
+    tail->run();
     active = false;
+    for (size_t i = 0; i < device_count; i++) delete devices[i];
+    delete[] devices;
   }
 
   Value load(const CallbackInfo& info) {
@@ -82,6 +102,25 @@ namespace fx_rack {
     if (cursor == duration.length) cursor = 0;
     current_file->set_cursor_cb(&tsfn);
     active = true;
+
+    Array filters = info[0].As<Array>();
+    device_count = filters.Length();
+    devices = new IDevice*[device_count];
+
+    for (size_t i = 0; i < device_count; i++) {
+      Value val = filters[i];
+      Object obj = val.As<Object>();
+      auto type = obj.Get("type").As<Number>().Int32Value();
+
+      switch (type) {
+        case 0:
+          double cutoff = obj.Get("cutoff").As<Number>().DoubleValue();
+          int taps = obj.Get("slope").As<Number>().Int32Value();
+          bool hp = obj.Get("hp").As<Boolean>().Value();
+          devices[i] = new FilterDevice(cutoff, taps, hp);
+          break;
+      }
+    }
 
     std::thread(play_worker).detach();
   }

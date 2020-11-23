@@ -22,8 +22,8 @@
     <div class='knob-center'>
       <Knob
         name='Cutoff'
-        lowerBound={50}
-        upperBound={15000}
+        lowerBound={0}
+        upperBound={1}
         bind:value={cutoff}
       />
     </div>

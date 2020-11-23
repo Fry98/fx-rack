@@ -10,7 +10,7 @@
   const addFilter = () => {
     dispatch('device', {
       type: DeviceType.FILTER,
-      cutoff: 6000,
+      cutoff: 0.4,
       slope: 30,
       hp: false
     });
@@ -86,10 +86,6 @@
     &:hover {
       color: white;
     }
-  }
-
-  .content {
-    transition-duration: .4s;
   }
 
   button {

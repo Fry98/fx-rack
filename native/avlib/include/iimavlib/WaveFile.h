@@ -11,7 +11,7 @@
 #define WAVEFILE_H_
 
 #include <napi.h>
-#include "../../../duration.h"
+#include "../../../Duration.h"
 #include "AudioTypes.h"
 #include "PlatformDefs.h"
 #include <fstream>
