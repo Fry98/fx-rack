@@ -43,9 +43,8 @@ namespace fx_rack {
 
   void Filter::computeHPF() {
     computeLPF();
-    for (size_t i = 0; i < num_taps; i++) {
-      if (i % 2 == 1) coeffs[i] = -coeffs[i];
-    }
+    for (size_t i = 0; i < num_taps; i++) coeffs[i] = -coeffs[i];
+    coeffs[(num_taps - 1) / 2] += 1.0;
   }
 
   void Filter::process_sample(audio_sample_t& sample) {
