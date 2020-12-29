@@ -23,4 +23,4 @@ namespace fx_rack {
     std::vector<audio_sample_t> Reverb::comb(audio_buffer_t &buffer, double delay_diff, double decay_factor_diff);
     std::vector<audio_sample_t> Reverb::all_pass(std::vector<audio_sample_t> &samples);
   };
-} // namespace fx_rack
+}
