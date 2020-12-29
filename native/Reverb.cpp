@@ -11,7 +11,7 @@ namespace fx_rack {
     if (buffer.valid_samples == 0) {
       return error_type_t::ok;
     }
-    
+
     std::vector<audio_sample_t> result = comb(buffer, 0, 0);
     std::vector<audio_sample_t> comb_1 = comb(buffer, -11.73, -0.1313);
     std::vector<audio_sample_t> comb_2 = comb(buffer, 19.31, -0.2743);
@@ -72,4 +72,4 @@ namespace fx_rack {
 
     return all_pass_samples;
   }
-} // namespace fx_rack
+}
