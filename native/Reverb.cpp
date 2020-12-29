@@ -58,16 +58,16 @@ namespace fx_rack {
     audio_sample_t value = all_pass_samples[0];
     audio_sample_t max = audio_sample_t(0, 0);
     
-    for (audio_sample_t &sample : all_pass_samples) {
-      if (std::abs(sample.left) > max.left || std::abs(sample.right) > max.right) {
-        max = audio_sample_t(std::abs(sample.left), std::abs(sample.right));
+    for (int i = 0; i < all_pass_samples.size(); ++i) {
+      if (std::abs(all_pass_samples[i].left) > max.left || std::abs(all_pass_samples[i].right) > max.right) {
+        max = audio_sample_t(std::abs(all_pass_samples[i].left), std::abs(all_pass_samples[i].right));
       }
     }
 
-    for (audio_sample_t &sample : all_pass_samples) {
-      int16_t left = (value.left + (sample.left - value.left)) / max.left;
-      int16_t right = (value.right + (sample.right - value.right)) / max.right;
-      sample = audio_sample_t(left, right);
+    for (int i = 0; i < all_pass_samples.size(); ++i) {
+      int16_t left = (value.left + (all_pass_samples[i].left - value.left)) / max.left;
+      int16_t right = (value.right + (all_pass_samples[i].right - value.right)) / max.right;
+      all_pass_samples[i] = audio_sample_t(left, right);
     }
 
     return all_pass_samples;
