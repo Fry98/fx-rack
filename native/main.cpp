@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Duration.h"
 #include "Device.h"
+#include "Reverb.h"
 #include "Filter.h"
 #include "iimavlib.h"
 #include "iimavlib/WaveFile.h"
@@ -55,6 +56,7 @@ namespace fx_rack {
     }
 
     auto tail = chain
+      .add<Reverb>(0, 0.45, 100)
       .add<PlatformSink>(device_id)
       .sink();
 

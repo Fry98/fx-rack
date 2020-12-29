@@ -12,7 +12,6 @@ namespace fx_rack {
   class Reverb : public AudioFilter {
   public:
     Reverb(const pAudioFilter &child, double delay, double decay_factor, int mix_percent);
-    ~Reverb();
     error_type_t Reverb::do_process(audio_buffer_t &buffer);
   private:
     double delay;

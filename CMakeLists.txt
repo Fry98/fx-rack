@@ -22,6 +22,7 @@ add_subdirectory(native/avlib/src)
 add_subdirectory(native/avlib/include)
 
 add_library(${PROJECT_NAME} SHARED
+  native/Reverb.cpp
   native/Filter.cpp
   native/Device.cpp
   native/main.cpp
