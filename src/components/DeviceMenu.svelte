@@ -18,6 +18,12 @@
   };
 
   const addReverb = () => {
+    dispatch('device', {
+      type: DeviceType.REVERB,
+      delay: 100,
+      decayFactor: 0.5,
+      mix: 50
+    });
     open = false;
   };
 

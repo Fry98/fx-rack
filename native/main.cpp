@@ -47,16 +47,20 @@ namespace fx_rack {
 
     for (size_t i = 0; i < device_count; i++) {
       switch (devices[i]->getType()) {
-        case 0:
+        case 0: {
           auto dev = static_cast<FilterDevice*>(devices[i]);
           FilterType type = dev->hp ? HPF : LPF;
           chain = chain.add<Filter>(type, dev->taps, dev->cutoff);
           break;
+        } case 1: {
+          auto dev = static_cast<ReverbDevice*>(devices[i]);
+          chain = chain.add<Reverb>(dev->delay, dev->decayFactor, dev->mix);
+          break;
+        }
       }
     }
 
     auto tail = chain
-      .add<Reverb>(0, 0.45, 100)
       .add<PlatformSink>(device_id)
       .sink();
 
@@ -115,12 +119,19 @@ namespace fx_rack {
       auto type = obj.Get("type").As<Number>().Int32Value();
 
       switch (type) {
-        case 0:
+        case 0: {
           double cutoff = obj.Get("cutoff").As<Number>().DoubleValue();
           int taps = obj.Get("slope").As<Number>().Int32Value();
           bool hp = obj.Get("hp").As<Boolean>().Value();
           devices[i] = new FilterDevice(cutoff, taps, hp);
           break;
+        } case 1: {
+          double delay = obj.Get("delay").As<Number>().DoubleValue();
+          double decayFactor = obj.Get("decayFactor").As<Number>().DoubleValue();
+          int mix = obj.Get("mix").As<Number>().Int32Value();
+          devices[i] = new ReverbDevice(delay, decayFactor, mix);
+          break;
+        }
       }
     }
 

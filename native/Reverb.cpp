@@ -36,7 +36,7 @@ namespace fx_rack {
     }
     if (!buffer_initialzied) {
       int buffer_size_ms = delay + 19.31 + 11.73;
-      _buffer_size = 1.1 * buffer_size_ms * samp_freq / 1000.0;
+      _buffer_size = 1.1 * buffer_size_ms * samp_freq / 1000.0 + 1;
       _buffer_r = - (delay + 11.73) * samp_freq / 1000;
       _buffer = new audio_sample_t[_buffer_size];
       for (int i = 0; i < _buffer_size; ++i) {
@@ -54,6 +54,8 @@ namespace fx_rack {
     for (int i = 0; i < buffer.data.size(); ++i) {
       if (_buffer_r + i >= 0) {
         buffer.data[i] = (1.0 - mix_percent/100.0) * buffer.data[i] + mix_percent/100.0 * _buffer[get_buffer_index(_buffer_r, i)];
+      } else {
+        buffer.data[i] = (1.0 - mix_percent/100.0) * buffer.data[i];
       }
     }
 

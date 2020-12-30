@@ -9,6 +9,8 @@
 	import { DeviceType } from './types';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import DeviceMenu from './components/DeviceMenu.svelte';
+import Reverb from './components/Reverb.svelte';
+import type { bind } from 'svelte/internal';
 	const { ipcRenderer } = require('electron');
 	const { dialog } = require('electron').remote;
 
@@ -145,6 +147,13 @@
 					bind:slope={device.slope}
 					bind:type={device.hp}
 					on:remove={() => removeDevice(i)}
+				/>
+			{/if}
+			{#if device.type === DeviceType.REVERB}
+				<Reverb
+					bind:delay={device.delay}
+					bind:decayFactor={device.decayFactor}
+					bind:mix={device.mix}
 				/>
 			{/if}
 		{/each}

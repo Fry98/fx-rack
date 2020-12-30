@@ -1,4 +1,5 @@
 #include "Filter.h"
+#include "Reverb.h"
 
 namespace fx_rack {
   class IDevice {
@@ -13,5 +14,14 @@ namespace fx_rack {
       double cutoff;
       int taps;
       bool hp;
+  };
+
+  class ReverbDevice : public IDevice {
+    public:
+      ReverbDevice(double delay, double decayFactor, int mix);
+      int getType() const;
+      double delay;
+      double decayFactor;
+      int mix;
   };
 }
