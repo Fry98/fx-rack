@@ -16,6 +16,7 @@
 	const precision = writable(false);
 	setContext('precision', precision);
 
+	let filenameTemp: string = null;
 	let filename: string = null;
 	let meta: AudioMeta = null;
 	let playing = false;
@@ -68,8 +69,9 @@
 			]
 		}).then((files: any) => {
 			if (files.filePaths.length === 0) return;
+			playing = false;
 			ipcRenderer.send('load', files.filePaths[0]);
-			filename = files.filePaths[0].split('\\').pop();
+			filenameTemp = files.filePaths[0].split('\\').pop();
 		});
 	};
 
@@ -100,7 +102,7 @@
 
 	ipcRenderer.on('meta', (_, value: AudioMeta) => {
 		meta = value;
-		playing = false;
+		filename = filenameTemp;
 		cursor = 0;
 	});
 

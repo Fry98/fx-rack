@@ -77,10 +77,10 @@ namespace fx_rack {
 
     String filepath = info[0].As<String>();
     try {
-      cursor = 0;
       WaveFile* new_file = new WaveFile(std::string(filepath), &cursor, duration);
       if (current_file != nullptr) delete current_file;
       current_file = new_file;
+      cursor = 0;
 
       Object obj = Object::New(env);
       obj.Set("rate", duration.rate);
