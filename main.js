@@ -25,7 +25,7 @@ function createWindow () {
 
   win.setMenu(null);
   win.loadFile('public/index.html');
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   ipcMain.on('load', (_, path) => {
     try {
