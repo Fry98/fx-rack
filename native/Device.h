@@ -27,9 +27,9 @@ namespace fx_rack {
 
   class DistortionDevice : public IDevice {
     public:
-      DistortionDevice(int16_t gain, double threshold);
+      DistortionDevice(double gain, int16_t threshold);
       int getType() const;
-      int16_t gain;
-      double threshold;
+      double gain;
+      int16_t threshold;
   };
 }

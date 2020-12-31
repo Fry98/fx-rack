@@ -23,8 +23,8 @@ namespace fx_rack {
   }
 
   DistortionDevice::DistortionDevice(
-    int16_t gain, 
-    double threshold
+    double gain, 
+    int16_t threshold
   ): gain(gain), threshold(threshold) {}
 
   int DistortionDevice::getType() const {

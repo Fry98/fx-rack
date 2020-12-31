@@ -3,16 +3,15 @@
 	import { writable } from 'svelte/store';
 	import type { Writable } from 'svelte/store';
 	import Filter from './components/Filter.svelte';
+	import Reverb from './components/Reverb.svelte';
+	import Distortion from './components/Distortion.svelte';
 	import Player from './components/Player.svelte';
 	import Icon from 'fa-svelte';
 	import type { Device, AudioMeta } from './types';
 	import { DeviceType } from './types';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import DeviceMenu from './components/DeviceMenu.svelte';
-	import Reverb from './components/Reverb.svelte';
-	import Distortion from './components/Distortion.svelte';
-	import type { bind } from 'svelte/internal';
-	
+
 	const { ipcRenderer } = require('electron');
 	const { dialog } = require('electron').remote;
 

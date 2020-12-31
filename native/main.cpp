@@ -58,7 +58,8 @@ namespace fx_rack {
           auto dev = static_cast<ReverbDevice*>(devices[i]);
           chain = chain.add<Reverb>(dev->delay, dev->decayFactor, dev->mix);
           break;
-        } case 2: {
+        }
+        case 2: {
           auto dev = static_cast<DistortionDevice*>(devices[i]);
           chain = chain.add<Distortion>(dev->gain, dev->threshold);
           break;
@@ -131,15 +132,17 @@ namespace fx_rack {
           bool hp = obj.Get("hp").As<Boolean>().Value();
           devices[i] = new FilterDevice(cutoff, taps, hp);
           break;
-        } case 1: {
+        }
+        case 1: {
           double delay = obj.Get("delay").As<Number>().DoubleValue();
           double decayFactor = obj.Get("decayFactor").As<Number>().DoubleValue();
           int mix = obj.Get("mix").As<Number>().Int32Value();
           devices[i] = new ReverbDevice(delay, decayFactor, mix);
           break;
-        } case 2: {
-          int16_t gain = (int16_t) obj.Get("gain").As<Number>().Int32Value();
-          double threshold = obj.Get("threshold").As<Number>().DoubleValue();
+        }
+        case 2: {
+          double gain = obj.Get("gain").As<Number>().DoubleValue();
+          int16_t threshold = (int16_t) obj.Get("threshold").As<Number>().Int32Value();
           devices[i] = new DistortionDevice(gain, threshold);
           break;
         }
