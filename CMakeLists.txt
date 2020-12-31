@@ -24,6 +24,7 @@ add_subdirectory(native/avlib/include)
 add_library(${PROJECT_NAME} SHARED
   native/Reverb.cpp
   native/Filter.cpp
+  native/Distortion.cpp
   native/Device.cpp
   native/main.cpp
   ${CMAKE_JS_SRC}
