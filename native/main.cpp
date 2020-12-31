@@ -138,7 +138,7 @@ namespace fx_rack {
           devices[i] = new ReverbDevice(delay, decayFactor, mix);
           break;
         } case 2: {
-          int16_t gain = obj.Get("gain").As<Number>().Int32Value(); // todo je treba precastit, nevim kde
+          int16_t gain = (int16_t) obj.Get("gain").As<Number>().Int32Value();
           double threshold = obj.Get("threshold").As<Number>().DoubleValue();
           devices[i] = new DistortionDevice(gain, threshold);
           break;

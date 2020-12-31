@@ -10,14 +10,14 @@
   <div class="distortion">
     <Knob 
       name="Gain" 
-      lowerBound={1.0} 
+      lowerBound={0.1} 
       upperBound={4.0} 
       bind:value={gain} 
     />
     <Knob
       name="Threshold"
       lowerBound={100}
-      upperBound={32768}
+      upperBound={32767}
       bind:value={threshold} 
     />
   </div>

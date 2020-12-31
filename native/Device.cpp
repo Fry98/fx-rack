@@ -27,7 +27,7 @@ namespace fx_rack {
     double threshold
   ): gain(gain), threshold(threshold) {}
 
-  int ReverbDevice::getType() const {
+  int DistortionDevice::getType() const {
     return 2;
   }
 }
