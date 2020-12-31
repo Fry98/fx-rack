@@ -18,7 +18,7 @@ namespace fx_rack {
     public:
       Filter(const pAudioFilter& child, FilterType type, unsigned int num_taps, double cutoff);
       ~Filter();
-      error_type_t Filter::do_process(audio_buffer_t& buffer);
+      error_type_t do_process(audio_buffer_t& buffer);
 
     private:
       unsigned int num_taps;

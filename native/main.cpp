@@ -4,6 +4,7 @@
 #include "Duration.h"
 #include "Device.h"
 #include "Reverb.h"
+#include "Distortion.h"
 #include "Filter.h"
 #include "iimavlib.h"
 #include "iimavlib/WaveFile.h"
@@ -52,7 +53,8 @@ namespace fx_rack {
           FilterType type = dev->hp ? HPF : LPF;
           chain = chain.add<Filter>(type, dev->taps, dev->cutoff);
           break;
-        } case 1: {
+        }
+        case 1: {
           auto dev = static_cast<ReverbDevice*>(devices[i]);
           chain = chain.add<Reverb>(dev->delay, dev->decayFactor, dev->mix);
           break;
