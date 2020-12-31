@@ -23,11 +23,12 @@ namespace fx_rack {
     audio_sample_t* _buffer;
     int _buffer_w = 0;
     int _buffer_r;
+    int _buffer_r_all_pass;
     bool buffer_initialzied = false;
 
     void Reverb::comb(std::vector<audio_sample_t> &samples, double delay_diff, double decay_factor_diff);
     void Reverb::all_pass(std::vector<audio_sample_t> &samples);
     int Reverb::get_buffer_index(int current, int move_by);
-    void Reverb::clear_buffer(int size);
+    void Reverb::clear_buffer(size_t size);
   };
 }
