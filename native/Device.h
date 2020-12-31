@@ -24,4 +24,12 @@ namespace fx_rack {
       double decayFactor;
       int mix;
   };
+
+  class DistortionDevice : public IDevice {
+    public:
+      DistortionDevice(int16_t gain, double threshold);
+      int getType() const;
+      int16_t gain;
+      double threshold;
+  };
 }

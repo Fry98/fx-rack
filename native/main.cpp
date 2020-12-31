@@ -56,6 +56,10 @@ namespace fx_rack {
           auto dev = static_cast<ReverbDevice*>(devices[i]);
           chain = chain.add<Reverb>(dev->delay, dev->decayFactor, dev->mix);
           break;
+        } case 2: {
+          auto dev = static_cast<DistortionDevice*>(devices[i]);
+          chain = chain.add<Distortion>(dev->gain, dev->threshold);
+          break;
         }
       }
     }
@@ -130,6 +134,11 @@ namespace fx_rack {
           double decayFactor = obj.Get("decayFactor").As<Number>().DoubleValue();
           int mix = obj.Get("mix").As<Number>().Int32Value();
           devices[i] = new ReverbDevice(delay, decayFactor, mix);
+          break;
+        } case 2: {
+          int16_t gain = obj.Get("gain").As<Number>().Int32Value(); // todo je treba precastit, nevim kde
+          double threshold = obj.Get("threshold").As<Number>().DoubleValue();
+          devices[i] = new DistortionDevice(gain, threshold);
           break;
         }
       }

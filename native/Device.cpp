@@ -21,4 +21,13 @@ namespace fx_rack {
   int ReverbDevice::getType() const {
     return 1;
   }
+
+  DistortionDevice::DistortionDevice(
+    int16_t gain, 
+    double threshold
+  ): gain(gain), threshold(threshold) {}
+
+  int ReverbDevice::getType() const {
+    return 2;
+  }
 }

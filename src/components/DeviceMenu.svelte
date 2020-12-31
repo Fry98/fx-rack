@@ -28,6 +28,11 @@
   };
 
   const addDistortion = () => {
+    dispatch('device', {
+      type: DeviceType.DISTORTION,
+      gain: 10,
+      threshold: 10
+    });
     open = false;
   };
 </script>

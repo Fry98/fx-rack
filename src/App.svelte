@@ -9,8 +9,10 @@
 	import { DeviceType } from './types';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import DeviceMenu from './components/DeviceMenu.svelte';
-import Reverb from './components/Reverb.svelte';
-import type { bind } from 'svelte/internal';
+	import Reverb from './components/Reverb.svelte';
+	import Distortion from './components/Distortion.svelte';
+	import type { bind } from 'svelte/internal';
+	
 	const { ipcRenderer } = require('electron');
 	const { dialog } = require('electron').remote;
 
@@ -154,6 +156,13 @@ import type { bind } from 'svelte/internal';
 					bind:delay={device.delay}
 					bind:decayFactor={device.decayFactor}
 					bind:mix={device.mix}
+					on:remove={() => removeDevice(i)}
+				/>
+			{/if}
+			{#if device.type === DeviceType.DISTORTION}
+				<Distortion
+					bind:gain={device.gain}
+					bind:threshold={device.threshold}
 					on:remove={() => removeDevice(i)}
 				/>
 			{/if}
