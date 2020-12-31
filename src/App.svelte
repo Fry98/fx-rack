@@ -154,6 +154,7 @@ import type { bind } from 'svelte/internal';
 					bind:delay={device.delay}
 					bind:decayFactor={device.decayFactor}
 					bind:mix={device.mix}
+					on:remove={() => removeDevice(i)}
 				/>
 			{/if}
 		{/each}

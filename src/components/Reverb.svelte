@@ -34,7 +34,7 @@
   .reverb {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     margin-bottom: 15px;
   }
 </style>
