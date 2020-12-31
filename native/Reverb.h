@@ -15,6 +15,8 @@ namespace fx_rack {
     ~Reverb();
     error_type_t do_process(audio_buffer_t &buffer);
   private:
+    const double min = INT16_MIN;
+    const double max = INT16_MAX;
     double delay;
     double decay_factor;
     int mix_percent;
@@ -30,5 +32,6 @@ namespace fx_rack {
     void Reverb::all_pass(std::vector<audio_sample_t> &samples);
     int Reverb::get_buffer_index(int current, int move_by);
     void Reverb::clear_buffer(size_t size);
+    void Reverb::safe_add(audio_sample_t& sample, audio_sample_t& value);
   };
 }

@@ -54,7 +54,9 @@ namespace fx_rack {
 
     for (int i = 0; i < buffer.valid_samples; ++i) {
       if (_buffer_r + i >= 0) {
-        _buffer[get_buffer_index(_buffer_r, i)] = (1.0 - mix_percent/100.0) * buffer.data[i] + mix_percent/100.0 * _buffer[get_buffer_index(_buffer_r, i)];
+        _buffer[get_buffer_index(_buffer_r, i)] = (1.0 - mix_percent/150.0) * buffer.data[i] + mix_percent/150.0 * _buffer[get_buffer_index(_buffer_r, i)];
+      } else {
+        buffer.data[i] *= (1.0 - mix_percent/150.0);
       }
     }
 
@@ -75,7 +77,7 @@ namespace fx_rack {
   void Reverb::comb(std::vector<audio_sample_t> &samples, double delay_diff, double decay_factor_diff) {
     int delay_samples = (int) (delay_diff * samp_freq / 1000);
     for (int i = 0; i < samples.size(); ++i) {
-      _buffer[get_buffer_index(_buffer_w, delay_samples + i)] += samples[i] * (decay_factor + decay_factor_diff);
+      safe_add(_buffer[get_buffer_index(_buffer_w, delay_samples + i)], samples[i] * (decay_factor + decay_factor_diff));
     }
   }
 
@@ -85,9 +87,16 @@ namespace fx_rack {
 
     for (int i = 0; i < samples.size(); ++i) {
       if (get_buffer_index(_buffer_r_all_pass, i) >= 0) {
-        _buffer[get_buffer_index(_buffer_r, i)] += - decay_factor_ * _buffer[get_buffer_index(_buffer_r_all_pass, i)];
-        _buffer[get_buffer_index(_buffer_r, i)] += decay_factor_ * _buffer[get_buffer_index(_buffer_r_all_pass, i + 20)];
+        safe_add(_buffer[get_buffer_index(_buffer_r, i)], - decay_factor_ * _buffer[get_buffer_index(_buffer_r_all_pass, i)]);
+        safe_add(_buffer[get_buffer_index(_buffer_r, i)], decay_factor_ * _buffer[get_buffer_index(_buffer_r_all_pass, i + 20)]);
       }
     }
+  }
+
+  void Reverb::safe_add(audio_sample_t& sample1, audio_sample_t& sample2) {
+      double left = (double) sample1.left + sample2.left;
+      double right = (double) sample1.right + sample2.right;
+      sample1.left = (int16_t) std::clamp(left, min, max);
+      sample1.right = (int16_t) std::clamp(right, min, max);
   }
 }
