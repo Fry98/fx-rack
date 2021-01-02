@@ -7,7 +7,7 @@
   export let mix: number;
 </script>
 
-<Device name="Reverberator" on:remove>
+<Device name="Reverb" on:remove>
   <div class="reverb">
     <Knob
       name="Delay"
@@ -16,13 +16,13 @@
       bind:value={delay}
     />
     <Knob
-      name="Decay factor"
+      name="Decay"
       lowerBound={0.1}
       upperBound={1.0}
       bind:value={decayFactor}
     />
     <Knob
-      name="Dry/Wet mix"
+      name="Dry / Wet"
       lowerBound={0}
       upperBound={100}
       bind:value={mix}

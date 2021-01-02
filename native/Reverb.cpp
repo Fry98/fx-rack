@@ -1,8 +1,5 @@
-#define _USE_MATH_DEFINES
 #include "Reverb.h"
-#include <math.h>
-#include <iostream>
-#include <cstdio>
+#include <algorithm>
 
 namespace fx_rack {
   Reverb::Reverb(const pAudioFilter &child, double delay, double decay_factor, int mix_percent)

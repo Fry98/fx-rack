@@ -1,5 +1,5 @@
-#include <algorithm>
 #include "Distortion.h"
+#include <algorithm>
 
 namespace fx_rack {
   Distortion::Distortion(
