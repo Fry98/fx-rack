@@ -6,6 +6,8 @@ This is an audio effect rack inspired by Reason and it was created as a semestra
 
 The only currently supported audio format is uncompressed WAV.
 
+![Preview of the FX Rack application](/resources/preview.png)
+
 ## Technology
 This project is separated into the back-end, which handles the audio processing, and the front-end, which provides user interface for creating custom FX chains.
 
